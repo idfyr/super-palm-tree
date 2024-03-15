@@ -2,7 +2,7 @@ version: '3'
 services:
     app:
         build:
-            dockerfile: .
+            dockerfile: ./Dockerfile
         container_name: app
         restart: unless-stopped
         tty: true
@@ -26,7 +26,7 @@ services:
             - db-data:/var/lib/mysql
     nginx:
         build:
-            dockerfile: ./docker/nginx
+            dockerfile: ./docker/nginx/Dockerfile
         container_name: nginx
         restart: unless-stopped
         ports:
