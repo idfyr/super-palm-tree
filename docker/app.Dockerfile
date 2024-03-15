@@ -32,6 +32,8 @@ RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath opcache
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
 RUN docker-php-ext-install gd
 
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
 # Copy configuration files
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
@@ -49,7 +51,7 @@ WORKDIR /var/www
 
 # Run the entrypoint file
 RUN chmod +x docker/entrypoint.sh
-ENTRYPOINT [ "sh","docker/entrypoint.sh" ]
+ENTRYPOINT [ "docker/entrypoint.sh" ]
 
 # Expose port 9000
 EXPOSE 9000
