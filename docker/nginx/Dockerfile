@@ -1,3 +1,3 @@
 FROM nginx:alpine
-ADD Docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 WORKDIR /var/www/

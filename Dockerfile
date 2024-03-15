@@ -52,6 +52,3 @@ WORKDIR /var/www
 # Run the entrypoint file
 RUN chmod +x docker/entrypoint.sh
 ENTRYPOINT [ "docker/entrypoint.sh" ]
-
-# Expose port 9000
-EXPOSE 9000
