@@ -35,7 +35,8 @@ RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/i
 RUN docker-php-ext-install gd
 
 # Copy configuration files
-COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
+COPY ./docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
@@ -46,7 +47,6 @@ RUN chown -R www-data:www-data /var/www
 # Change user to www-data
 USER www-data
 
-# Install dependency
 WORKDIR /var/www
 
 # Run the entrypoint file

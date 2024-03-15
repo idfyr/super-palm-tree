@@ -2,12 +2,12 @@ version: '3'
 services:
     app:
         build:
-            dockerfile: ./docker/app.Dockerfile
+            dockerfile: .
         container_name: app
         restart: unless-stopped
         tty: true
         volumes:
-            - ./:/var/www
+            - web-data:/var/www
         networks:
             - laravel-net
     database:
@@ -16,14 +16,15 @@ services:
         ports:
             -   3306:3306
         environment:
-            - MYSQL_DATABASE=${DB_DATABASE}
-            - MYSQL_USER=${DB_USERNAME}
-            - MYSQL_PASSWORD=${DB_PASSWORD}
-            - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+            - MYSQL_DATABASE=default
+            - MYSQL_USER=secret
+            - MYSQL_PASSWORD=secret
+            - MYSQL_ROOT_PASSWORD=secret
         volumes:
             - db-data:/var/lib/mysql
     nginx:
-        image: nginx:alpine
+        build:
+            dockerfile: ./docker/nginx
         container_name: nginx
         restart: unless-stopped
         ports:
@@ -31,7 +32,7 @@ services:
         depends_on:
             - app
         volumes:
-            - ./:/var/www
+            - web-data:/var/www
         networks:
             - laravel-net
 
@@ -41,4 +42,5 @@ networks:
         driver: bridge
 
 volumes:
+    web-data: ~
     db-data: ~
