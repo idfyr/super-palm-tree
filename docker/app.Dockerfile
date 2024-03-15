@@ -11,16 +11,18 @@ RUN groupmod -g $HOST_GID www-data && \
 
 
 # Install dependencies
-RUN apt-get update -y && apt-get install -y \
-    libicu-dev \
-    libmariadb-dev \
-    unzip zip \
-    zlib1g-dev \
+RUN apt-get update && apt-get install -y \
+    build-essential \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
     libjpeg62-turbo-dev \
-    libpng-dev \
+    libfreetype6-dev \
+    locales \
+    zip \
+    unzip \
+    libxml2-dev \
+    libonig-dev \
+    libzip-dev \
+    jpegoptim optipng pngquant gifsicle \
     ca-certificates \
     curl
 
@@ -31,8 +33,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath opcache
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
 RUN docker-php-ext-install gd
-
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Copy configuration files
 COPY docker/php/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
