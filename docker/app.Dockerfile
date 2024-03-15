@@ -11,16 +11,16 @@ RUN groupmod -g $HOST_GID www-data && \
 
 
 # Install dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
+RUN apt-get update -y && apt-get install -y \
+    libicu-dev \
+    libmariadb-dev \
+    unzip zip \
+    zlib1g-dev \
     libpng-dev \
-    libjpeg62-turbo-dev \
+    libjpeg-dev \
     libfreetype6-dev \
-    locales \
-    zip \
-    libonig-dev \
-    libzip-dev \
-    jpegoptim optipng pngquant gifsicle \
+    libjpeg62-turbo-dev \
+    libpng-dev \
     ca-certificates \
     curl
 
@@ -28,11 +28,9 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
-
-RUN install-php-extensions zip pdo_mysql mbstring zip exif pcntl bcmath opcache
+RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath opcache
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
-RUN install-php-extensions gd
+RUN docker-php-ext-install gd
 
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
