@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -f "vendor/autoload.php" ]; then
-    composer install
+    composer update
 fi
 
 if [ ! -f ".env" ]; then
