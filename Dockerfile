@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     curl \
     libzip-dev \
-    jpegoptim optipng pngquant gifsicle \
+    jpegoptim optipng pngquant gifsicle
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
