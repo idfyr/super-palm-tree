@@ -1,30 +1,23 @@
 FROM php:8.3-fpm
 
-# Set environment variables
-ENV HOST_GID=1000 \
-    HOST_UID=1000 \
-    PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
-
-# Add user
-RUN groupmod -g $HOST_GID www-data && \
-    usermod -u $HOST_UID www-data
-
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpng-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
+    libxml2-dev \
     locales \
     zip \
     unzip \
-    libxml2-dev \
+    libpq-dev \
+    libcurl4-gnutls-dev \
+    nginx \
     libonig-dev \
+    ca-certificates \
+    curl \
     libzip-dev \
     jpegoptim optipng pngquant gifsicle \
-    ca-certificates \
-    curl
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -34,21 +27,36 @@ RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl bcmath opcache
 RUN docker-php-ext-configure gd --with-jpeg=/usr/include/ --with-freetype=/usr/include/
 RUN docker-php-ext-install gd
 
-# Copy configuration files
-COPY ./docker/php/php.ini /usr/local/etc/php/php.ini
-COPY ./docker/php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
-
-# Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
-COPY --chown=www-data:www-data . /var/www/
-RUN chown -R www-data:www-data /var/www
-
-# Change user to www-data
-USER www-data
-
+# Set working directory to /var/www.
 WORKDIR /var/www
 
-# Run the entrypoint file
-RUN chmod +x docker/entrypoint.sh
+# Copy files from current folder to container current folder (set in workdir).
+COPY --chown=www-data:www-data . .
+
+# Create laravel caching folders.
+RUN mkdir -p /var/www/storage/framework
+RUN mkdir -p /var/www/storage/framework/cache
+RUN mkdir -p /var/www/storage/framework/testing
+RUN mkdir -p /var/www/storage/framework/sessions
+RUN mkdir -p /var/www/storage/framework/views
+
+# Fix files ownership.
+RUN chown -R www-data /var/www/storage
+RUN chown -R www-data /var/www/storage/framework
+RUN chown -R www-data /var/www/storage/framework/sessions
+
+# Set correct permission.
+RUN chmod -R 755 /var/www/storage
+RUN chmod -R 755 /var/www/storage/logs
+RUN chmod -R 755 /var/www/storage/framework
+RUN chmod -R 755 /var/www/storage/framework/sessions
+RUN chmod -R 755 /var/www/bootstrap
+
+# Adjust user permission & group
+RUN usermod --uid 1000 www-data
+RUN groupmod --gid 1001 www-data
+
 ENTRYPOINT [ "docker/entrypoint.sh" ]
+
+# Expose port 9000
+EXPOSE 9000

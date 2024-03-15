@@ -12,6 +12,7 @@ services:
             - laravel-net
         depends_on:
             - database
+            - nginx
     database:
         container_name: database
         image: mysql:8.0
@@ -31,8 +32,6 @@ services:
         restart: unless-stopped
         ports:
             - "8000:80"
-        depends_on:
-            - app
         volumes:
             - web-data:/var/www
         networks:

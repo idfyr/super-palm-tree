@@ -16,6 +16,3 @@ php artisan migrate
 php artisan optimize
 php artisan view:cache
 php artisan icons:cache
-
-php-fpm -D
-nginx -g "daemon off;"
